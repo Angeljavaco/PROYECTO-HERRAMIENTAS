@@ -26,7 +26,7 @@ function Home() {
         </div>
       ))}
 
-     <h2>🧺 Carrito</h2>
+     <h2>🧺 Carrito de Compras</h2>
 
 {cart.length === 0 && <p>Carrito vacío</p>}
 
