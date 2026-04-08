@@ -16,7 +16,7 @@ function Home() {
 
   return (
     <div>
-      <h1>🛒 Productos</h1>
+      <h1>🛒 Productos Disponibles</h1>
 
       {products.map(p => (
         <div key={p.id} style={{border:"1px solid #ccc", margin:"10px", padding:"10px"}}>
