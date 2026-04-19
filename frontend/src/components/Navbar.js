@@ -1,19 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function Navbar() {
+function Navbar({ onSearch }) {
+  const navigate = useNavigate();
+  const [user, setUser] = useState("");
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) setUser(savedUser);
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    setUser("");
+    navigate("/login");
+  };
+
   return (
     <div style={styles.nav}>
-      <h2 style={styles.logo}>🛒 ShopPro</h2>
+      <h2 style={styles.logo} onClick={() => navigate("/")}>
+        🛒 ShopPro
+      </h2>
 
-      <input 
-        type="text" 
+      <input
+        type="text"
         placeholder="Buscar productos..."
         style={styles.search}
+        onChange={(e) => onSearch(e.target.value)}
       />
 
       <div>
-        <button style={styles.btn}>Login</button>
-        <button style={styles.cart}>🧺</button>
+        {user ? (
+          <>
+            <span style={styles.user}>Hola, {user} 👋</span>
+            <button style={styles.btn} onClick={logout}>
+              Salir
+            </button>
+          </>
+        ) : (
+          <button style={styles.btn} onClick={() => navigate("/login")}>
+            Login
+          </button>
+        )}
+        <button onClick={() => navigate("/orders")}>
+            Pedidos
+        </button>
       </div>
     </div>
   );
@@ -29,7 +60,8 @@ const styles = {
     color: "white"
   },
   logo: {
-    margin: 0
+    margin: 0,
+    cursor: "pointer"
   },
   search: {
     width: "40%",
@@ -38,15 +70,14 @@ const styles = {
     border: "none"
   },
   btn: {
-    marginRight: "10px",
+    marginLeft: "10px",
     padding: "8px",
     border: "none",
-    borderRadius: "6px"
+    borderRadius: "6px",
+    cursor: "pointer"
   },
-  cart: {
-    padding: "8px",
-    border: "none",
-    borderRadius: "6px"
+  user: {
+    marginRight: "10px"
   }
 };
 
