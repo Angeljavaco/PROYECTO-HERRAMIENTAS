@@ -1,0 +1,4 @@
+node_modules/
+OnlineStoreApp/target/
+*.log
+*.zip
