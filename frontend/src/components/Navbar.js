@@ -18,10 +18,13 @@ function Navbar({ onSearch }) {
 
   return (
     <div style={styles.nav}>
+      
+      {/* LOGO */}
       <h2 style={styles.logo} onClick={() => navigate("/")}>
-        🛒 ShopPro
+        🛍️ TienditaDonPepe
       </h2>
 
+      {/* BUSCADOR */}
       <input
         type="text"
         placeholder="Buscar productos..."
@@ -29,12 +32,18 @@ function Navbar({ onSearch }) {
         onChange={(e) => onSearch(e.target.value)}
       />
 
-      <div>
+      {/* USUARIO + BOTONES */}
+      <div style={styles.userBox}>
         {user ? (
           <>
             <span style={styles.user}>Hola, {user} 👋</span>
+
             <button style={styles.btn} onClick={logout}>
               Salir
+            </button>
+
+            <button style={styles.btn} onClick={() => navigate("/orders")}>
+              Pedidos
             </button>
           </>
         ) : (
@@ -42,9 +51,6 @@ function Navbar({ onSearch }) {
             Login
           </button>
         )}
-        <button onClick={() => navigate("/orders")}>
-            Pedidos
-        </button>
       </div>
     </div>
   );
@@ -53,31 +59,49 @@ function Navbar({ onSearch }) {
 const styles = {
   nav: {
     display: "flex",
+    flexWrap: "wrap", // 🔥 clave para responsive
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "15px 30px",
-    background: "#ff6a00",
-    color: "white"
+    padding: "10px 15px",
+    background: "#00A650",
+    color: "white",
+    gap: "10px"
   },
+
   logo: {
     margin: 0,
-    cursor: "pointer"
+    cursor: "pointer",
+    fontSize: "18px"
   },
+
   search: {
-    width: "40%",
+    width: "100%", // 🔥 baja en móvil
     padding: "8px",
     borderRadius: "8px",
-    border: "none"
+    border: "none",
+    outline: "none"
   },
+
+  userBox: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "6px",
+    alignItems: "center",
+    justifyContent: "flex-end"
+  },
+
   btn: {
-    marginLeft: "10px",
-    padding: "8px",
+    padding: "6px 10px",
     border: "none",
     borderRadius: "6px",
-    cursor: "pointer"
+    cursor: "pointer",
+    background: "white",
+    color: "#333",
+    fontWeight: "bold"
   },
+
   user: {
-    marginRight: "10px"
+    fontSize: "12px"
   }
 };
 
