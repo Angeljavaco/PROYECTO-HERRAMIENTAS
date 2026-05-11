@@ -1,82 +1,79 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function ProductDetail() {
   const { state } = useLocation();
   const navigate = useNavigate();
-
   const product = state;
 
   if (!product) {
-    return <h2>Producto no encontrado</h2>;
+    return (
+      <div className="app-shell">
+        <Navbar />
+        <main className="container page-header">
+          <h1>Producto no encontrado</h1>
+          <p>No recibimos informacion del producto seleccionado.</p>
+          <button className="btn btn-brand" onClick={() => navigate("/")}>
+            Volver a la tienda
+          </button>
+        </main>
+      </div>
+    );
   }
 
+  const finalPrice = product.discount
+    ? product.price - (product.price * product.discount) / 100
+    : product.price;
+
+  const addToCart = () => {
+    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = cartData.find((item) => item.id === product.id);
+
+    if (existing) existing.quantity += 1;
+    else cartData.push({ ...product, quantity: 1 });
+
+    localStorage.setItem("cart", JSON.stringify(cartData));
+    navigate("/");
+  };
+
   return (
-    <div style={styles.container}>
-      <button style={styles.back} onClick={() => navigate("/")}>
-        ⬅ Volver
-      </button>
+    <div className="app-shell">
+      <Navbar />
 
-      <div style={styles.card}>
-        <img src={product.image} style={styles.image} />
-
-        <div>
-          <h1>{product.name}</h1>
-          <h2>S/. {product.price}</h2>
-
-          <p style={styles.desc}>
-            Producto de alta calidad ideal para uso diario. 
-            Excelente rendimiento y durabilidad.
-          </p>
-
-          <button style={styles.button}>
-            Agregar al carrito
-          </button>
+      <main className="container">
+        <div className="page-header">
+          <div className="back-row">
+            <button className="btn btn-ghost" onClick={() => navigate("/")}>
+              Volver
+            </button>
+          </div>
+          <p className="eyebrow">Detalle de producto</p>
         </div>
-      </div>
+
+        <section className="detail-layout">
+          <div className="detail-media">
+            <img src={product.image} alt={product.name} />
+          </div>
+
+          <article className="detail-panel">
+            {product.discount && <span className="badge detail-discount">{product.discount}% OFF</span>}
+            <h1>{product.name}</h1>
+            <div className="price-row">
+              {product.discount && <span className="old-price">S/. {product.price}</span>}
+              <span className="price">S/. {finalPrice}</span>
+            </div>
+            <p className="muted">
+              Producto seleccionado para uso diario, con buen rendimiento y una presentacion clara para comparar antes de comprar.
+            </p>
+            <button className="btn btn-primary" onClick={addToCart}>
+              Agregar al carrito
+            </button>
+          </article>
+        </section>
+      </main>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: "40px",
-    fontFamily: "Arial"
-  },
-  back: {
-    marginBottom: "20px",
-    padding: "10px",
-    border: "none",
-    background: "#333",
-    color: "white",
-    borderRadius: "8px",
-    cursor: "pointer"
-  },
-  card: {
-    display: "flex",
-    gap: "40px",
-    background: "#fff",
-    padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-  },
-  image: {
-    width: "300px",
-    borderRadius: "10px"
-  },
-  desc: {
-    marginTop: "10px",
-    color: "#555"
-  },
-  button: {
-    marginTop: "20px",
-    padding: "10px 20px",
-    background: "#ff6a00",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
-  }
-};
 
 export default ProductDetail;

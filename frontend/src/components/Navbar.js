@@ -1,108 +1,76 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Navbar({ onSearch }) {
+function Navbar({ onSearch = () => {} }) {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
+  const [admin, setAdmin] = useState("");
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
+    const savedAdmin = localStorage.getItem("admin");
     if (savedUser) setUser(savedUser);
+    if (savedAdmin) setAdmin(savedAdmin);
   }, []);
 
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("admin");
     setUser("");
+    setAdmin("");
     navigate("/login");
   };
 
   return (
-    <div style={styles.nav}>
-      
-      {/* LOGO */}
-      <h2 style={styles.logo} onClick={() => navigate("/")}>
-        🛍️ TienditaDonPepe
-      </h2>
+    <header className="topbar">
+      <div className="container nav-inner">
+        <button className="brand-button" onClick={() => navigate("/")}>
+          <span className="brand-mark">TP</span>
+          <span>Tiendita Don Pepe</span>
+        </button>
 
-      {/* BUSCADOR */}
-      <input
-        type="text"
-        placeholder="Buscar productos..."
-        style={styles.search}
-        onChange={(e) => onSearch(e.target.value)}
-      />
+        <input
+          className="search-field"
+          type="text"
+          placeholder="Buscar laptops, monitores o accesorios"
+          onChange={(e) => onSearch(e.target.value)}
+        />
 
-      {/* USUARIO + BOTONES */}
-      <div style={styles.userBox}>
-        {user ? (
-          <>
-            <span style={styles.user}>Hola, {user} 👋</span>
-
-            <button style={styles.btn} onClick={logout}>
-              Salir
-            </button>
-
-            <button style={styles.btn} onClick={() => navigate("/orders")}>
-              Pedidos
-            </button>
-          </>
-        ) : (
-          <button style={styles.btn} onClick={() => navigate("/login")}>
-            Login
-          </button>
-        )}
+        <div className="nav-actions">
+          {admin ? (
+            <>
+              <span className="hello">Admin, {admin}</span>
+              <button className="btn btn-ghost" onClick={() => navigate("/admin")}>
+                Panel
+              </button>
+              <button className="btn btn-primary" onClick={logout}>
+                Salir
+              </button>
+            </>
+          ) : user ? (
+            <>
+              <span className="hello">Hola, {user}</span>
+              <button className="btn btn-ghost" onClick={() => navigate("/orders")}>
+                Pedidos
+              </button>
+              <button className="btn btn-primary" onClick={logout}>
+                Salir
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn btn-ghost" onClick={() => navigate("/admin-login")}>
+                Admin
+              </button>
+              <button className="btn btn-primary" onClick={() => navigate("/login")}>
+                Iniciar sesion
+              </button>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </header>
   );
 }
-
-const styles = {
-  nav: {
-    display: "flex",
-    flexWrap: "wrap", // 🔥 clave para responsive
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "10px 15px",
-    background: "#00A650",
-    color: "white",
-    gap: "10px"
-  },
-
-  logo: {
-    margin: 0,
-    cursor: "pointer",
-    fontSize: "18px"
-  },
-
-  search: {
-    width: "100%", // 🔥 baja en móvil
-    padding: "8px",
-    borderRadius: "8px",
-    border: "none",
-    outline: "none"
-  },
-
-  userBox: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "6px",
-    alignItems: "center",
-    justifyContent: "flex-end"
-  },
-
-  btn: {
-    padding: "6px 10px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    background: "white",
-    color: "#333",
-    fontWeight: "bold"
-  },
-
-  user: {
-    fontSize: "12px"
-  }
-};
 
 export default Navbar;

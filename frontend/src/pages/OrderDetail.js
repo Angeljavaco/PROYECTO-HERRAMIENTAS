@@ -1,78 +1,67 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function OrderDetail() {
   const { state } = useLocation();
   const navigate = useNavigate();
-
   const order = state;
 
   if (!order) {
-    return <p>No hay información del pedido</p>;
+    return (
+      <div className="app-shell">
+        <Navbar />
+        <main className="container page-header">
+          <h1>No hay informacion del pedido</h1>
+          <button className="btn btn-brand" onClick={() => navigate("/orders")}>
+            Volver a pedidos
+          </button>
+        </main>
+      </div>
+    );
   }
 
   return (
-    <div style={styles.container}>
-      <button style={styles.back} onClick={() => navigate(-1)}>
-        ← Volver
-      </button>
+    <div className="app-shell">
+      <Navbar />
 
-      <h1>📦 Detalle del Pedido</h1>
-
-      <div style={styles.card}>
-        <p><b>ID:</b> {order.id}</p>
-        <p><b>Fecha:</b> {order.date}</p>
-
-        <h3>Productos:</h3>
-
-        {order.items.map((item, i) => (
-          <div key={i} style={styles.item}>
-            <img src={item.image} style={styles.image} />
-
-            <div>
-              <p>{item.name}</p>
-              <p>Cantidad: {item.quantity}</p>
-              <p>S/. {item.price}</p>
-            </div>
+      <main className="container">
+        <header className="page-header">
+          <div className="back-row">
+            <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+              Volver
+            </button>
           </div>
-        ))}
+          <p className="eyebrow">Pedido #{order.id}</p>
+          <h1>Detalle del pedido</h1>
+          <p>Compra realizada el {order.date}.</p>
+        </header>
 
-        <h2>Total: S/. {order.total}</h2>
-      </div>
+        <section className="section-panel">
+          <div className="cart-header">
+            <div>
+              <h2>Productos</h2>
+              <p className="muted">{order.items.length} producto(s) en este pedido.</p>
+            </div>
+            <strong className="price">S/. {Number(order.total).toFixed(2)}</strong>
+          </div>
+
+          <div className="cart-items">
+            {order.items.map((item, index) => (
+              <div key={`${item.id}-${index}`} className="cart-item">
+                <img className="order-thumb" src={item.image} alt={item.name} />
+                <div>
+                  <p className="item-title">{item.name}</p>
+                  <span className="item-meta">Cantidad: {item.quantity}</span>
+                </div>
+                <strong>S/. {item.price}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: "30px"
-  },
-  back: {
-    marginBottom: "20px",
-    padding: "10px",
-    border: "none",
-    borderRadius: "8px",
-    background: "#ccc",
-    cursor: "pointer"
-  },
-  card: {
-    background: "#fff",
-    padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
-  },
-  item: {
-    display: "flex",
-    gap: "15px",
-    marginBottom: "15px",
-    alignItems: "center"
-  },
-  image: {
-    width: "80px",
-    height: "80px",
-    objectFit: "cover",
-    borderRadius: "8px"
-  }
-};
 
 export default OrderDetail;

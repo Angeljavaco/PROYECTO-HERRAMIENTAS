@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Orders from "./pages/Orders";
 import Checkout from "./pages/Checkout";
 import OrderDetail from "./pages/OrderDetail";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-detail" element={<OrderDetail />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );

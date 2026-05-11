@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function Checkout() {
   const navigate = useNavigate();
@@ -7,7 +8,6 @@ function Checkout() {
   const [cart, setCart] = useState([]);
   const [payment, setPayment] = useState("yape");
   const [showModal, setShowModal] = useState(false);
-
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -15,19 +15,16 @@ function Checkout() {
     cvv: ""
   });
 
-  // 🧾 cargar carrito
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(data);
   }, []);
 
-  // 💰 total
   const total = cart.reduce(
     (sum, item) => sum + item.price * (item.quantity || 1),
     0
   );
 
-  // 🧠 inputs
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -35,24 +32,21 @@ function Checkout() {
     });
   };
 
-  // 🛒 comprar
   const handleBuy = () => {
     if (!form.name || !form.address) {
-      alert("Completa los datos");
+      alert("Completa los datos de envio");
       return;
     }
 
     const user = localStorage.getItem("user");
 
-    // 🔥 guardar pedido SOLO si está logueado
     if (user) {
-      let orders = JSON.parse(localStorage.getItem("orders")) || [];
-
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
       const newOrder = {
         id: Date.now(),
-        user: user,
+        user,
         items: cart,
-        total: total,
+        total,
         date: new Date().toLocaleString()
       };
 
@@ -60,181 +54,159 @@ function Checkout() {
       localStorage.setItem("orders", JSON.stringify(orders));
     }
 
-    // 🧹 limpiar carrito
     localStorage.removeItem("cart");
     setCart([]);
-
-    // 🔥 mostrar modal
     setShowModal(true);
   };
 
   return (
-    <div style={styles.container}>
-      <h1>💳 Checkout</h1>
+    <div className="app-shell">
+      <Navbar />
 
-      {/* 🧾 RESUMEN */}
-      <div style={styles.section}>
-        <h2>🧺 Resumen</h2>
+      <main className="container">
+        <header className="page-header">
+          <p className="eyebrow">Checkout</p>
+          <h1>Finaliza tu compra</h1>
+          <p>Confirma tus productos, completa el envio y elige el metodo de pago que prefieras.</p>
+        </header>
 
-        {cart.length === 0 ? (
-          <p>Carrito vacío</p>
-        ) : (
-          cart.map(item => (
-            <p key={item.id}>
-              {item.name} x {item.quantity} - S/. {item.price * item.quantity}
-            </p>
-          ))
-        )}
-
-        <h3>Total: S/. {total}</h3>
-      </div>
-
-      {/* 👤 DATOS */}
-      <div style={styles.section}>
-        <h2>📦 Datos de envío</h2>
-
-        <input
-          name="name"
-          placeholder="Nombre"
-          onChange={handleChange}
-          style={styles.input}
-        />
-
-        <input
-          name="address"
-          placeholder="Dirección"
-          onChange={handleChange}
-          style={styles.input}
-        />
-      </div>
-
-      {/* 💳 MÉTODO DE PAGO */}
-      <div style={styles.section}>
-        <h2>💰 Método de pago</h2>
-
-        <select
-          value={payment}
-          onChange={(e) => setPayment(e.target.value)}
-          style={styles.input}
-        >
-          <option value="yape">Yape</option>
-          <option value="paypal">PayPal</option>
-          <option value="card">Tarjeta</option>
-        </select>
-
-        {/* YAPE */}
-        {payment === "yape" && (
+        <section className="checkout-layout">
           <div>
-            <p>📱 Escanea este QR</p>
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PagoYape"
-              alt="QR Yape"
-              style={{ marginTop: "10px" }}
-            />
+            <section className="section-panel">
+              <h2>Datos de envio</h2>
+              <div className="form-group">
+                <label htmlFor="name">Nombre completo</label>
+                <input
+                  id="name"
+                  className="form-input"
+                  name="name"
+                  placeholder="Nombre del comprador"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="address">Direccion</label>
+                <input
+                  id="address"
+                  className="form-input"
+                  name="address"
+                  placeholder="Direccion de entrega"
+                  onChange={handleChange}
+                />
+              </div>
+            </section>
+
+            <section className="section-panel">
+              <h2>Metodo de pago</h2>
+              <select
+                className="select-input"
+                value={payment}
+                onChange={(e) => setPayment(e.target.value)}
+              >
+                <option value="yape">Yape</option>
+                <option value="paypal">PayPal</option>
+                <option value="card">Tarjeta</option>
+              </select>
+
+              {payment === "yape" && (
+                <div className="payment-box">
+                  <strong>Pago con Yape</strong>
+                  <p className="muted">Escanea el QR y confirma la compra cuando el pago este listo.</p>
+                  <img
+                    className="qr-img"
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PagoYape"
+                    alt="QR Yape"
+                  />
+                </div>
+              )}
+
+              {payment === "paypal" && (
+                <div className="payment-box">
+                  <strong>PayPal</strong>
+                  <p className="muted">Simularemos la redireccion para completar el pago.</p>
+                </div>
+              )}
+
+              {payment === "card" && (
+                <div className="payment-box">
+                  <div className="form-group">
+                    <label htmlFor="card">Numero de tarjeta</label>
+                    <input
+                      id="card"
+                      className="form-input"
+                      name="card"
+                      placeholder="0000 0000 0000 0000"
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="cvv">CVV</label>
+                    <input
+                      id="cvv"
+                      className="form-input"
+                      name="cvv"
+                      placeholder="123"
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              )}
+            </section>
           </div>
-        )}
 
-        {/* PAYPAL */}
-        {payment === "paypal" && (
-          <p>🔵 Redirección simulada a PayPal</p>
-        )}
+          <aside className="summary-panel">
+            <div>
+              <h2>Resumen</h2>
+              {cart.length === 0 ? (
+                <div className="empty-state">Carrito vacio.</div>
+              ) : (
+                <div className="cart-items">
+                  {cart.map((item) => (
+                    <div className="order-line" key={item.id}>
+                      <div>
+                        <p className="item-title">{item.name}</p>
+                        <span className="item-meta">Cantidad: {item.quantity || 1}</span>
+                      </div>
+                      <strong>S/. {item.price * (item.quantity || 1)}</strong>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-        {/* TARJETA */}
-        {payment === "card" && (
-          <div>
-            <input
-              name="card"
-              placeholder="Número de tarjeta"
-              onChange={handleChange}
-              style={styles.input}
-            />
+              <div className="total-row">
+                <span className="summary-label">Total</span>
+                <strong className="summary-value">S/. {total.toFixed(2)}</strong>
+              </div>
+            </div>
 
-            <input
-              name="cvv"
-              placeholder="CVV"
-              onChange={handleChange}
-              style={styles.input}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* BOTÓN */}
-      <button style={styles.button} onClick={handleBuy}>
-        Confirmar Compra
-      </button>
-
-      {/* 🔥 MODAL */}
-      {showModal && (
-        <div style={styles.overlay}>
-          <div style={styles.modal}>
-            <h2>🎉 ¡Compra exitosa!</h2>
-            <p>Gracias por tu pedido</p>
-
-            <button
-              style={styles.button}
-              onClick={() => {
-                setShowModal(false);
-                navigate("/"); // 🔥 redirige al home
-              }}
-            >
-              Aceptar
+            <button className="btn btn-brand" onClick={handleBuy} disabled={cart.length === 0}>
+              Confirmar compra
             </button>
+          </aside>
+        </section>
+
+        {showModal && (
+          <div className="overlay">
+            <div className="modal">
+              <h2>Compra exitosa</h2>
+              <p className="muted">Gracias por tu pedido. Ya puedes seguir explorando productos.</p>
+              <button
+                className="btn btn-brand"
+                onClick={() => {
+                  setShowModal(false);
+                  navigate("/");
+                }}
+              >
+                Aceptar
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </main>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: "30px",
-    maxWidth: "600px",
-    margin: "auto"
-  },
-  section: {
-    marginBottom: "20px",
-    padding: "15px",
-    background: "#f5f5f5",
-    borderRadius: "10px"
-  },
-  input: {
-    display: "block",
-    width: "100%",
-    marginBottom: "10px",
-    padding: "10px"
-  },
-  button: {
-    width: "100%",
-    padding: "15px",
-    background: "#ff6a00",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "16px",
-    cursor: "pointer"
-  },
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    background: "rgba(0,0,0,0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 999
-  },
-  modal: {
-    background: "white",
-    padding: "30px",
-    borderRadius: "12px",
-    textAlign: "center",
-    width: "300px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
-  }
-};
 
 export default Checkout;
