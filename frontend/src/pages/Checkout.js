@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { apiUrl } from "../utils/api";
+
+const phoneRegex = /^\+[1-9]\d{7,14}$/;
 
 function Checkout() {
   const navigate = useNavigate();
@@ -8,16 +11,25 @@ function Checkout() {
   const [cart, setCart] = useState([]);
   const [payment, setPayment] = useState("yape");
   const [showModal, setShowModal] = useState(false);
+  const [smsStatus, setSmsStatus] = useState(null);
+  const [sendingSms, setSendingSms] = useState(false);
   const [form, setForm] = useState({
     name: "",
     address: "",
+    phone: "",
     card: "",
     cvv: ""
   });
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("cart")) || [];
+    const profile = JSON.parse(localStorage.getItem("userProfile")) || {};
     setCart(data);
+    setForm((current) => ({
+      ...current,
+      name: profile.name || "",
+      phone: profile.phone || ""
+    }));
   }, []);
 
   const total = cart.reduce(
@@ -32,26 +44,83 @@ function Checkout() {
     });
   };
 
-  const handleBuy = () => {
+  const sendSmsReminder = async (order, phone) => {
+    setSendingSms(true);
+    setSmsStatus(null);
+
+    try {
+      const response = await fetch(apiUrl("/SmsReminderController"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          orderId: order.id,
+          customerName: order.user,
+          phone,
+          total: order.total,
+          message: `Hola ${order.user}, tu pedido #${order.id} fue registrado por S/. ${Number(order.total).toFixed(2)}. Te avisaremos cuando este en camino.`
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "No se pudo enviar el SMS");
+      }
+
+      setSmsStatus({
+        type: "success",
+        text: result.message || `SMS enviado correctamente a ${result.phone}`
+      });
+    } catch (error) {
+      setSmsStatus({
+        type: "error",
+        text: `Compra guardada, pero fallo el SMS: ${error.message}`
+      });
+    } finally {
+      setSendingSms(false);
+    }
+  };
+
+  const handleBuy = async () => {
+    const user = localStorage.getItem("user");
+
+    if (!user) {
+      alert("Inicia sesion para confirmar la compra y recibir el SMS.");
+      navigate("/login");
+      return;
+    }
+
     if (!form.name || !form.address) {
       alert("Completa los datos de envio");
       return;
     }
 
-    const user = localStorage.getItem("user");
+    if (!phoneRegex.test(form.phone)) {
+      alert("Ingresa el telefono en formato internacional. Ejemplo: +51987654321");
+      return;
+    }
+
+    let newOrder = null;
 
     if (user) {
       const orders = JSON.parse(localStorage.getItem("orders")) || [];
-      const newOrder = {
+      newOrder = {
         id: Date.now(),
         user,
+        customerName: form.name,
+        phone: form.phone,
+        address: form.address,
         items: cart,
         total,
-        date: new Date().toLocaleString()
+        date: new Date().toLocaleString(),
+        smsStatus: "PENDING"
       };
 
       orders.push(newOrder);
       localStorage.setItem("orders", JSON.stringify(orders));
+      await sendSmsReminder(newOrder, form.phone);
     }
 
     localStorage.removeItem("cart");
@@ -81,6 +150,7 @@ function Checkout() {
                   className="form-input"
                   name="name"
                   placeholder="Nombre del comprador"
+                  value={form.name}
                   onChange={handleChange}
                 />
               </div>
@@ -92,8 +162,24 @@ function Checkout() {
                   className="form-input"
                   name="address"
                   placeholder="Direccion de entrega"
+                  value={form.address}
                   onChange={handleChange}
                 />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phone">Telefono registrado para SMS</label>
+                <input
+                  id="phone"
+                  className="form-input"
+                  name="phone"
+                  placeholder="+51987654321"
+                  value={form.phone}
+                  onChange={handleChange}
+                />
+                <small className="field-help">
+                  Usa formato internacional E.164 para Twilio, por ejemplo +51 seguido del numero.
+                </small>
               </div>
             </section>
 
@@ -182,7 +268,7 @@ function Checkout() {
             </div>
 
             <button className="btn btn-brand" onClick={handleBuy} disabled={cart.length === 0}>
-              Confirmar compra
+              {sendingSms ? "Enviando SMS..." : "Confirmar compra"}
             </button>
           </aside>
         </section>
@@ -192,6 +278,11 @@ function Checkout() {
             <div className="modal">
               <h2>Compra exitosa</h2>
               <p className="muted">Gracias por tu pedido. Ya puedes seguir explorando productos.</p>
+              {smsStatus && (
+                <p className={`sms-feedback ${smsStatus.type}`}>
+                  {smsStatus.text}
+                </p>
+              )}
               <button
                 className="btn btn-brand"
                 onClick={() => {

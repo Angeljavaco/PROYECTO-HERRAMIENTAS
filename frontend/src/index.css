@@ -491,6 +491,39 @@ img {
   color: var(--muted);
 }
 
+.field-help {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.sms-feedback {
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.sms-feedback.success {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.sms-feedback.error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.quantity-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.cart-total-row {
+  margin: 18px 0;
+}
+
 .empty-state {
   border: 1px dashed #cbd5e1;
   border-radius: var(--radius);

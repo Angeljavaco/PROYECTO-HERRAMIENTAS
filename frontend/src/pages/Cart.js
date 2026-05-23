@@ -1,120 +1,99 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function Cart() {
   const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(data);
   }, []);
 
-  const removeItem = (id) => {
-    const updated = cart.filter(item => item.id !== id);
+  const saveCart = (updated) => {
     setCart(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
+  };
+
+  const removeItem = (id) => {
+    saveCart(cart.filter((item) => item.id !== id));
   };
 
   const increase = (id) => {
-    const updated = cart.map(item =>
+    saveCart(cart.map((item) => (
       item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    setCart(updated);
-    localStorage.setItem("cart", JSON.stringify(updated));
+    )));
   };
 
   const decrease = (id) => {
-    const updated = cart.map(item =>
+    saveCart(cart.map((item) => (
       item.id === id && item.quantity > 1
         ? { ...item, quantity: item.quantity - 1 }
         : item
-    );
-    setCart(updated);
-    localStorage.setItem("cart", JSON.stringify(updated));
+    )));
   };
 
   const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + Number(item.price) * Number(item.quantity || 1),
     0
   );
 
   return (
-    <div style={styles.container}>
-      <h1>🧺 Carrito de Compras</h1>
+    <div className="app-shell">
+      <Navbar />
 
-      {cart.length === 0 ? (
-        <p>Carrito vacío</p>
-      ) : (
-        cart.map(item => (
-          <div key={item.id} style={styles.card}>
-            <img src={item.image} style={styles.image} />
+      <main className="container">
+        <header className="page-header">
+          <p className="eyebrow">Carrito</p>
+          <h1>Carrito de compras</h1>
+          <p>Actualiza cantidades, elimina productos y continua al checkout.</p>
+        </header>
 
-            <div>
-              <h3>{item.name}</h3>
-              <p>S/. {item.price}</p>
+        <section className="section-panel">
+          {cart.length === 0 ? (
+            <div className="empty-state">Carrito vacio</div>
+          ) : (
+            <div className="cart-items">
+              {cart.map((item) => (
+                <div key={item.id} className="cart-item">
+                  <img className="order-thumb" src={item.image} alt={item.name} />
 
-              <div>
-                <button onClick={() => decrease(item.id)}>-</button>
-                <span style={{ margin: "0 10px" }}>
-                  {item.quantity}
-                </span>
-                <button onClick={() => increase(item.id)}>+</button>
-              </div>
+                  <div>
+                    <p className="item-title">{item.name}</p>
+                    <span className="item-meta">S/. {item.price}</span>
+                  </div>
+
+                  <div className="quantity-control">
+                    <button className="btn btn-icon" onClick={() => decrease(item.id)}>-</button>
+                    <span>{item.quantity || 1}</span>
+                    <button className="btn btn-icon" onClick={() => increase(item.id)}>+</button>
+                  </div>
+
+                  <button className="btn btn-danger" onClick={() => removeItem(item.id)}>
+                    Eliminar
+                  </button>
+                </div>
+              ))}
             </div>
+          )}
 
-            <button onClick={() => removeItem(item.id)} style={styles.remove}>
-              ❌
-            </button>
+          <div className="total-row cart-total-row">
+            <span className="summary-label">Total</span>
+            <strong className="summary-value">S/. {total.toFixed(2)}</strong>
           </div>
-        ))
-      )}
 
-      <h2>Total: S/. {total}</h2>
-      <button 
-  style={{
-    marginTop: "20px",
-    padding: "12px",
-    width: "100%",
-    background: "#ff6a00",
-    color: "white",
-    border: "none",
-    borderRadius: "8px"
-  }}
-  onClick={() => navigate("/checkout")}
->
-  💳 Ir a pagar
-</button>
+          <button
+            className="btn btn-brand"
+            onClick={() => navigate("/checkout")}
+            disabled={cart.length === 0}
+          >
+            Ir a pagar
+          </button>
+        </section>
+      </main>
     </div>
   );
 }
 
-const styles = {
-  container: { padding: "30px" },
-  card: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "15px",
-    marginBottom: "10px",
-    background: "#fff",
-    borderRadius: "10px"
-  },
-  image: {
-    width: "80px",
-    height: "80px",
-    objectFit: "cover"
-  },
-  remove: {
-    background: "red",
-    color: "white",
-    border: "none",
-    padding: "5px"
-  }
-};
-
 export default Cart;
-<button onClick={() => window.location.href = "/checkout"}>
-  Comprar ahora
-</button>
-import { useNavigate } from "react-router-dom";
-
-const navigate = useNavigate();

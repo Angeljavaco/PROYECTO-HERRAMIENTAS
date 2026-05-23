@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { apiUrl } from "../utils/api";
 import {
   getDeletedProductIds,
   mergeProductsForStore,
@@ -33,7 +34,7 @@ function AdminDashboard() {
       return;
     }
 
-    fetch("http://localhost:8080/OnlineStoreApp/ProductController")
+    fetch(apiUrl("/ProductController"))
       .then((res) => res.json())
       .then((data) => setProducts(mergeProductsForStore(data)))
       .catch(() => setProducts(mergeProductsForStore([])));

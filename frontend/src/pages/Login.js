@@ -12,9 +12,9 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const users = [
-    { email: "angel@test.com", password: "1234", name: "Angel" },
-    { email: "admin@test.com", password: "admin", name: "Admin" },
-    { email: "fernandito@test.com", password: "Fernandini", name: "Fernandini" }
+    { email: "angel@test.com", password: "1234", name: "Angel", phone: "+51987654321" },
+    { email: "admin@test.com", password: "admin", name: "Admin", phone: "+51912345678" },
+    { email: "fernandito@test.com", password: "Fernandini", name: "Fernandini", phone: "+51999888777" }
   ];
 
   const handleChange = (e) => {
@@ -43,6 +43,11 @@ function Login() {
     }
 
     localStorage.setItem("user", user.name);
+    localStorage.setItem("userProfile", JSON.stringify({
+      name: user.name,
+      email: user.email,
+      phone: user.phone
+    }));
     navigate("/");
   };
 

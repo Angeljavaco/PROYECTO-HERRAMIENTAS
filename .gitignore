@@ -2,3 +2,7 @@ node_modules/
 OnlineStoreApp/target/
 *.log
 *.zip
+.env
+tiendaonline.env
+tiendaonline.properties
+OnlineStoreApp/src/main/resources/config.properties

@@ -21,4 +21,14 @@
   <url-pattern>/ProductController</url-pattern>
  </servlet-mapping>
 
+ <servlet>
+  <servlet-name>SmsReminderController</servlet-name>
+  <servlet-class>controller.SmsReminderController</servlet-class>
+ </servlet>
+
+ <servlet-mapping>
+  <servlet-name>SmsReminderController</servlet-name>
+  <url-pattern>/SmsReminderController</url-pattern>
+ </servlet-mapping>
+
 </web-app>

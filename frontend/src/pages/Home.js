@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { apiUrl } from "../utils/api";
 import { mergeProductsForStore } from "../utils/products";
 
 const categories = [
@@ -22,7 +23,7 @@ function Home() {
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:8080/OnlineStoreApp/ProductController")
+    fetch(apiUrl("/ProductController"))
       .then((res) => res.json())
       .then((data) => {
         const updated = data.map((p) => {

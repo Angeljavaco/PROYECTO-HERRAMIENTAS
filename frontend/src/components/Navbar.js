@@ -15,6 +15,7 @@ function Navbar({ onSearch = () => {} }) {
 
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("userProfile");
     localStorage.removeItem("admin");
     setUser("");
     setAdmin("");
@@ -58,14 +59,9 @@ function Navbar({ onSearch = () => {} }) {
               </button>
             </>
           ) : (
-            <>
-              <button className="btn btn-ghost" onClick={() => navigate("/admin-login")}>
-                Admin
-              </button>
-              <button className="btn btn-primary" onClick={() => navigate("/login")}>
-                Iniciar sesion
-              </button>
-            </>
+            <button className="btn btn-primary" onClick={() => navigate("/login")}>
+              Iniciar sesion
+            </button>
           )}
         </div>
       </div>
