@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ./OnlineStoreApp
+      dockerfile: Dockerfile
+    container_name: tiendaonline-backend
+    environment:
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
+    ports:
+      - "8080:8080"
+    networks:
+      - tiendaonline-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL:-http://localhost:8080/OnlineStoreApp}
+    container_name: tiendaonline-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    networks:
+      - tiendaonline-net
+
+networks:
+  tiendaonline-net:
+    driver: bridge

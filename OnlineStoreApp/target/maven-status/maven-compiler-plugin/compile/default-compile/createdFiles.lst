@@ -1,6 +1,7 @@
 repository\SmsLogRepository.class
 controller\SmsReminderController.class
 service\TwilioSmsService$TwilioResult.class
+config\TwilioConfig.class
 service\TwilioSmsService.class
 model\SmsReminder.class
 controller\ProductController.class

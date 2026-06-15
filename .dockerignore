@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+.env.*
+frontend/node_modules
+frontend/build
+frontend/.sixth
+OnlineStoreApp/target
+*.log
+*.zip
+.DS_Store

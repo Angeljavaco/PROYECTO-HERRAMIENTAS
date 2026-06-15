@@ -1,6 +1,7 @@
-C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\controller\AuthController.java
-C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\controller\ProductController.java
+C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\config\TwilioConfig.java
 C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\controller\SmsReminderController.java
+C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\controller\ProductController.java
 C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\model\SmsReminder.java
+C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\controller\AuthController.java
 C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\repository\SmsLogRepository.java
 C:\Users\angel\Documents\NetBeansProjects\TiendaOnline\OnlineStoreApp\src\main\java\service\TwilioSmsService.java
